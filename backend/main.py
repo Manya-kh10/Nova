@@ -86,3 +86,31 @@ def clear_chat_history():
 @app.get("/chat/history")
 def get_chat_history():
     return {"history": get_history()}
+
+from modules.stack import add_task, get_tasks, update_task_status, delete_task
+
+class TaskRequest(BaseModel):
+    title: str
+    description: str = ""
+    project: str = ""
+    priority: str = "medium"
+    due_date: str = ""
+
+class StatusUpdate(BaseModel):
+    status: str
+
+@app.post("/stack/tasks")
+def create_task(req: TaskRequest):
+    return add_task(req.title, req.description, req.project, req.priority, req.due_date)
+
+@app.get("/stack/tasks")
+def list_tasks(status: str = None, project: str = None):
+    return {"tasks": get_tasks(status, project)}
+
+@app.patch("/stack/tasks/{task_id}")
+def update_task(task_id: int, req: StatusUpdate):
+    return update_task_status(task_id, req.status)
+
+@app.delete("/stack/tasks/{task_id}")
+def remove_task(task_id: int):
+    return delete_task(task_id)
