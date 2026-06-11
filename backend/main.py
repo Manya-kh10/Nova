@@ -114,3 +114,47 @@ def update_task(task_id: int, req: StatusUpdate):
 @app.delete("/stack/tasks/{task_id}")
 def remove_task(task_id: int):
     return delete_task(task_id)
+
+from modules.orbit import add_project, get_projects, update_project_status, delete_project, scan_folder, get_git_log, get_github_repos
+
+class ProjectRequest(BaseModel):
+    name: str
+    path: str = ""
+    description: str = ""
+    stack: str = ""
+    github_repo: str = ""
+
+class ProjectStatusUpdate(BaseModel):
+    status: str
+
+@app.post("/orbit/projects")
+def create_project(req: ProjectRequest):
+    return add_project(req.name, req.path, req.description, req.stack, req.github_repo)
+
+@app.get("/orbit/projects")
+def list_projects():
+    return {"projects": get_projects()}
+
+@app.patch("/orbit/projects/{project_id}")
+def update_project(project_id: int, req: ProjectStatusUpdate):
+    return update_project_status(project_id, req.status)
+
+@app.delete("/orbit/projects/{project_id}")
+def remove_project(project_id: int):
+    return delete_project(project_id)
+
+@app.get("/orbit/scan")
+def scan_projects(path: str):
+    return {"projects": scan_folder(path)}
+
+@app.get("/orbit/git/{project_id}")
+def git_log(project_id: int):
+    projects = get_projects()
+    project = next((p for p in projects if p["id"] == project_id), None)
+    if not project:
+        return {"commits": []}
+    return {"commits": get_git_log(project["path"])}
+
+@app.get("/orbit/github/{username}")
+def github_repos(username: str):
+    return {"repos": get_github_repos(username)}
