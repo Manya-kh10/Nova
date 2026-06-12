@@ -1,5 +1,6 @@
 backend/credentials.json
 backend/token.json
+backend/.env
 backend/__pycache__/
 backend/modules/__pycache__/
 venv/
