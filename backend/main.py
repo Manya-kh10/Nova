@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from modules.forge import run_full_benchmark, compare_models, benchmark_model
+from modules.pulse import fetch_important_emails, fetch_all_unread
+from modules.flux import log_session, get_sessions, get_today_stats
 from config import AVAILABLE_MODELS, BENCHMARK_PROMPTS, TEMPERATURE_SETTINGS, DEFAULT_MODEL
 app = FastAPI(title="Nova API", version="1.0.0")
 
@@ -158,3 +160,30 @@ def git_log(project_id: int):
 @app.get("/orbit/github/{username}")
 def github_repos(username: str):
     return {"repos": get_github_repos(username)}
+
+@app.get("/pulse/emails")
+def get_emails(max_results: int = 20):
+    return {"emails": fetch_important_emails(max_results)}
+
+@app.get("/pulse/unread")
+def get_unread():
+    return fetch_all_unread()
+
+
+class SessionRequest(BaseModel):
+    project: str = ""
+    duration_minutes: int = 25
+    type: str = "work"
+    completed: bool = True
+
+@app.post("/flux/sessions")
+def create_session(req: SessionRequest):
+    return log_session(req.project, req.duration_minutes, req.type, req.completed)
+
+@app.get("/flux/sessions")
+def list_sessions(limit: int = 50):
+    return {"sessions": get_sessions(limit)}
+
+@app.get("/flux/today")
+def today_stats():
+    return get_today_stats()

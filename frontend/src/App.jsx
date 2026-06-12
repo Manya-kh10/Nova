@@ -3,6 +3,8 @@ import Chat from './pages/Chat'
 import Forge from './pages/Forge'
 import Stack from './pages/Stack'
 import Orbit from './pages/Orbit'
+import Pulse from './pages/Pulse'
+import Flux from './pages/Flux'
 import './index.css'
 
 const styles = {
@@ -21,12 +23,16 @@ export default function App() {
         <button style={styles.navBtn(page === 'chat')} onClick={() => setPage('chat')} title="Nova Chat">✦</button>
         <button style={styles.navBtn(page === 'stack')} onClick={() => setPage('stack')} title="Stack">✅</button>
         <button style={styles.navBtn(page === 'orbit')} onClick={() => setPage('orbit')} title="Orbit">🗂</button>
+        <button style={styles.navBtn(page === 'pulse')} onClick={() => setPage('pulse')} title="Pulse">📬</button>
+        <button style={styles.navBtn(page === 'flux')} onClick={() => setPage('flux')} title="Flux">🍅</button>
         <button style={styles.navBtn(page === 'forge')} onClick={() => setPage('forge')} title="Forge">⚡</button>
       </div>
       <div style={styles.content}>
         {page === 'chat' && <Chat />}
         {page === 'stack' && <Stack />}
         {page === 'orbit' && <Orbit />}
+        {page === 'pulse' && <Pulse />}
+        {page === 'flux' && <Flux />}
         {page === 'forge' && <Forge />}
       </div>
     </div>
