@@ -9,6 +9,9 @@ from modules.forge import run_full_benchmark, compare_models, benchmark_model
 from modules.pulse import fetch_important_emails, fetch_all_unread
 from modules.flux import log_session, get_sessions, get_today_stats
 from config import AVAILABLE_MODELS, BENCHMARK_PROMPTS, TEMPERATURE_SETTINGS, DEFAULT_MODEL
+from fastapi import UploadFile, File
+import tempfile
+from modules.vault import extract_text, summarize_with_llm, save_summary, get_summaries, delete_summary
 app = FastAPI(title="Nova API", version="1.0.0")
 
 app.add_middleware(
@@ -187,3 +190,29 @@ def list_sessions(limit: int = 50):
 @app.get("/flux/today")
 def today_stats():
     return get_today_stats()
+
+
+@app.post("/vault/summarize")
+async def summarize_file(file: UploadFile = File(...)):
+    contents = await file.read()
+    suffix = '.' + file.filename.split('.')[-1]
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(contents)
+        tmp_path = tmp.name
+    try:
+        text = extract_text(tmp_path, file.filename)
+        if not text.strip():
+            return {"error": "Could not extract text from file"}
+        summary = summarize_with_llm(text)
+        save_summary(file.filename, suffix, text, summary)
+        return {"filename": file.filename, "summary": summary}
+    finally:
+        os.unlink(tmp_path)
+
+@app.get("/vault/summaries")
+def list_summaries():
+    return {"summaries": get_summaries()}
+
+@app.delete("/vault/summaries/{summary_id}")
+def remove_summary(summary_id: int):
+    return delete_summary(summary_id)

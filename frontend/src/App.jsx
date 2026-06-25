@@ -5,6 +5,7 @@ import Stack from './pages/Stack'
 import Orbit from './pages/Orbit'
 import Pulse from './pages/Pulse'
 import Flux from './pages/Flux'
+import Vault from './pages/Vault'
 import './index.css'
 
 const styles = {
@@ -25,6 +26,7 @@ export default function App() {
         <button style={styles.navBtn(page === 'orbit')} onClick={() => setPage('orbit')} title="Orbit">🗂</button>
         <button style={styles.navBtn(page === 'pulse')} onClick={() => setPage('pulse')} title="Pulse">📬</button>
         <button style={styles.navBtn(page === 'flux')} onClick={() => setPage('flux')} title="Flux">🍅</button>
+        <button style={styles.navBtn(page === 'vault')} onClick={() => setPage('vault')} title="Vault">📁</button>
         <button style={styles.navBtn(page === 'forge')} onClick={() => setPage('forge')} title="Forge">⚡</button>
       </div>
       <div style={styles.content}>
@@ -33,6 +35,7 @@ export default function App() {
         {page === 'orbit' && <Orbit />}
         {page === 'pulse' && <Pulse />}
         {page === 'flux' && <Flux />}
+        {page === 'vault' && <Vault />}
         {page === 'forge' && <Forge />}
       </div>
     </div>
